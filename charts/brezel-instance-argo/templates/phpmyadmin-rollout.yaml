@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: phpmyadmin
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+    spec:
+      containers:
+      - name: phpmyadmin
+        image: phpmyadmin/phpmyadmin
+        imagePullPolicy: Always
+        env:
+        - name: PMA_HOST
+          value: "{{ if .Values.with_database_pod }}{{ include "brezel.mysqlServiceName" . }}{{ else }}{{ .Values.db_host }}{{ end }}"
+        - name: PMA_PORT
+          value: "{{ if .Values.with_database_pod }}3306{{ else }}{{ .Values.db_port }}{{ end }}"
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: brezel-api
+              key: MYSQL_PASSWORD
+        - name: UPLOAD_LIMIT
+          value: "2048M"
+        - name: MAX_EXECUTION_TIME
+          value: "600"
+        ports:
+        - containerPort: 80
+  strategy:
+    canary:
+      stableService: phpmyadmin
+      canaryService: phpmyadmin-canary
+      trafficRouting:
+        nginx:
+          stableIngress: phpmyadmin
+      steps:
+      - setWeight: 20
+      - pause: {}
+      - setWeight: 40
+      - pause: {duration: 10}
+      - setWeight: 60
+      - pause: {duration: 10}
+      - setWeight: 80
+      - pause: {duration: 10}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin-canary
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: phpmyadmin
+  ports:
+  - port: 80
+    targetPort: 80

@@ -1,0 +1,79 @@
+{{- if .Values.cronjob.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: bakery-schedule
+  namespace: {{ .Values.namespace }}
+spec:
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  jobTemplate:
+    metadata:
+      name: brezel-cron
+    spec:
+      template:
+        metadata:
+          labels:
+            app: brezel-cron
+            configVersion: {{ include "brezel.configVersion" . }}
+        spec:
+          initContainers:
+          - name: prepare-storage-container
+            image: busybox
+            command:
+            - /bin/sh
+            - -c
+            args:
+            - printenv | awk -F= 'BEGIN{OFS=FS} {if ($1 ~ /^[[:alpha:]_][[:alnum:]_]*$/) printf "%s=\"%s\"\n", $1, substr($0, index($0,$2))}' > /app/storage/.env
+            securityContext:
+              runAsUser: 0
+            volumeMounts:
+            - name: brezel-storage
+              mountPath: /app/storage
+            envFrom:
+            - configMapRef:
+                name: brezel-api
+            - secretRef:
+                name: brezel-api
+            resources:
+              limits:
+                cpu: {{ .Values.brezel_init_container_resources.limits.cpu }}
+                memory: {{ .Values.brezel_init_container_resources.limits.memory }}
+              requests:
+                cpu: {{ .Values.brezel_init_container_resources.requests.cpu }}
+                memory: {{ .Values.brezel_init_container_resources.requests.memory }}
+          - name: wait-for
+            image: ghcr.io/patrickdappollonio/wait-for:latest
+            command:
+            - /wait-for
+            args:
+            - --host="{{ if .Values.with_database_pod }}{{ include "brezel.mysqlServiceName" . }}{{ else }}{{ .Values.db_host }}{{ end }}:{{ if .Values.with_database_pod }}3306{{ else }}{{ .Values.db_port }}{{ end }}"
+            - --verbose
+            resources:
+              limits:
+                cpu: {{ .Values.brezel_init_container_resources.limits.cpu }}
+                memory: {{ .Values.brezel_init_container_resources.limits.memory }}
+              requests:
+                cpu: {{ .Values.brezel_init_container_resources.requests.cpu }}
+                memory: {{ .Values.brezel_init_container_resources.requests.memory }}
+          containers:
+          - name: bakery-schedule
+            image: {{ .Values.image }}
+            command:
+            - /bin/sh
+            - -c
+            - {{ .Values.cronjob.command | quote }}
+            envFrom:
+            - configMapRef:
+                name: brezel-api
+            - secretRef:
+                name: brezel-api
+            volumeMounts:
+            - name: brezel-storage
+              mountPath: /app/storage
+          restartPolicy: OnFailure
+          imagePullSecrets:
+          - name: gitlab-registry
+          volumes:
+          - name: brezel-storage
+            emptyDir: {}
+{{- end }}

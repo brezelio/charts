@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: brezel
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: brezel
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: brezel-canary
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: brezel
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: brezel-spa
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: brezel-spa
+  ports:
+  - port: 80
+    targetPort: 80
+---
+{{- if .Values.with_database_pod }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: brezel-mysql
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: brezel-mysql
+  ports:
+  - port: 3306
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: phpmyadmin
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: brotcast
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: brotcast
+  ports:
+  - name: brotcast
+    port: 8086
+    targetPort: 8086

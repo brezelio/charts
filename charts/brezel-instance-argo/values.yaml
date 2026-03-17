@@ -1,0 +1,105 @@
+namespace: default
+cluster_issuer: ""
+default_system: ""
+global_gitlab_registry_data: ""
+api_replicas: 1
+with_database_pod: true
+db_host: ""
+db_port: 3306
+image: ""
+spa_image: ""
+brotcast_image: ""
+secure: true
+api_hostnames:
+  - api.example.invalid
+hostnames:
+  - app.example.invalid
+pma_hostname: "pma.example.invalid"
+brotcast_hostname: "brotcast.example.invalid"
+export_hostname: "export.example.invalid"
+app_key: ""
+app_env: "production"
+env: {}
+secret_env: {}
+system_envs: {}
+system_secret_envs: {}
+db_name: "brezel"
+db_user: "brezel"
+db_password: ""
+mysql_password: ""
+brotcast_secret: ""
+s3_access_key: ""
+s3_secret_key: ""
+s3_region: "eu-central-1"
+s3_bucket: ""
+s3_endpoint: ""
+s3_url: ""
+s3_use_path_style_endpoint: "true"
+brezel_storage_auto_create_bucket: "false"
+s3_root: ""
+storage_access_modes: ["ReadWriteOnce"]
+storage_class: "default"
+storage: "10Gi"
+db_storage: "10Gi"
+bootstrap:
+  enabled: true
+  ttl_seconds_after_finished: 600
+  backoff_limit: 3
+  command: >-
+    php bakery init --force &&
+    php bakery migrate --force &&
+    if [ -n "${DEFAULT_SYSTEM}" ]; then
+      php bakery system create "${DEFAULT_SYSTEM}" &&
+      php -d memory_limit=1G bakery apply &&
+      php bakery load --force;
+    fi
+workers: []
+# Example:
+# workers:
+#   - name: workflows-default
+#     replicas: 2
+#     queues: ["default"]
+#     timeout: 1200
+#   - name: workflows-domain-checks
+#     replicas: 1
+#     queues: ["domain-checks"]
+#     timeout: 1200
+#   - name: workflows-newsletter
+#     replicas: 1
+#     queues: ["newsletter-tagging", "newsletter-emails", "newsletter-tag-sync"]
+#     timeout: 1200
+#   - name: broadcasts
+#     replicas: 2
+#     command: "php bakery work --timeout=1200"
+#   - name: import
+#     replicas: 1
+#     command: "php bakery work --timeout=1200"
+cronjob:
+  enabled: true
+  schedule: "* * * * *"
+  command: "/usr/local/bin/php bakery schedule"
+brezel_resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+brezel_init_container_resources:
+  limits:
+    cpu: "200m"
+    memory: "256Mi"
+  requests:
+    cpu: "50m"
+    memory: "64Mi"
+session_driver: "database"
+cache_driver: "database"
+queue_driver: "database"
+log_channel: "stderr"
+mysql_resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "100m"
+    memory: "256Mi"

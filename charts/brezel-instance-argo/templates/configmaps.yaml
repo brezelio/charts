@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: brezel-api
+  namespace: {{ .Values.namespace }}
+data:
+  APP_URL: "{{ if .Values.secure }}https{{ else }}http{{ end }}://{{ include "brezel.primaryApiHostname" . }}"
+  APP_ENV: "{{ .Values.app_env }}"
+  DB_CONNECTION: "system"
+  TENANCY_HOST: "{{ if .Values.with_database_pod }}brezel-mysql{{ else }}{{ .Values.db_host }}{{ end }}"
+  TENANCY_PORT: "{{ if .Values.with_database_pod }}3306{{ else }}{{ .Values.db_port }}{{ end }}"
+  TENANCY_DATABASE: "{{ if .Values.with_database_pod }}brezel_meta{{ else }}{{ .Values.db_name }}{{ end }}"
+  TENANCY_USERNAME: "{{ if .Values.with_database_pod }}root{{ else }}{{ .Values.db_user }}{{ end }}"
+  MYSQL_DATABASE: "{{ if .Values.with_database_pod }}brezel_meta{{ else }}{{ .Values.db_name }}{{ end }}"
+  MYSQL_USER: "{{ if .Values.with_database_pod }}root{{ else }}{{ .Values.db_user }}{{ end }}"
+  BREZEL_BROTCAST_HOST: "{{ .Values.brotcast_hostname }}"
+  BREZEL_BROTCAST_PORT: "{{ if .Values.secure }}443{{ else }}80{{ end }}"
+  BREZEL_BROTCAST_APP_ID: "brezel"
+  BREZEL_BROTCAST_KEY: "brotcast"
+  BREZEL_BROTCAST_SCHEME: "https"
+  BREZEL_BROTCAST_APP_CLUSTER: "mt1"
+  BREZEL_EXPORT_URL: "{{ if .Values.secure }}https{{ else }}http{{ end }}://{{ .Values.export_hostname }}"
+  BREZEL_SYSTEM_DATABASE_PREFIX: "brezel_"
+  DEFAULT_SYSTEM: "{{ .Values.default_system }}"
+  BACKUP_NOTIFICATIONS_MAIL_TO: "dev@ki-bro.com"
+  SESSION_DRIVER: "{{ .Values.session_driver }}"
+  CACHE_DRIVER: "{{ .Values.cache_driver }}"
+  QUEUE_CONNECTION: "{{ .Values.queue_driver }}"
+  LOG_CHANNEL: "{{ .Values.log_channel }}"
+  FILESYSTEM_DISK: "s3"
+  TENANCY_DISK: "s3"
+  AWS_DEFAULT_REGION: "{{ .Values.s3_region }}"
+  AWS_BUCKET: "{{ .Values.s3_bucket }}"
+  AWS_ENDPOINT: "{{ .Values.s3_endpoint }}"
+  AWS_USE_PATH_STYLE_ENDPOINT: "{{ .Values.s3_use_path_style_endpoint }}"
+  S3_DEFAULT_REGION: "{{ .Values.s3_region }}"
+  S3_BUCKET: "{{ .Values.s3_bucket }}"
+  S3_ENDPOINT: "{{ .Values.s3_endpoint }}"
+  S3_USE_PATH_STYLE_ENDPOINT: "{{ .Values.s3_use_path_style_endpoint }}"
+  S3_URL: "{{ .Values.s3_url }}"
+  S3_ROOT: "{{ .Values.s3_root }}"
+  BREZEL_STORAGE_AUTO_CREATE_BUCKET: "{{ .Values.brezel_storage_auto_create_bucket }}"
+  {{- range $key, $value := .Values.env }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  {{- range $system, $envs := .Values.system_envs }}
+  {{- range $key, $value := $envs }}
+  BREZEL_SYSTEM_{{ $system }}_{{ $key }}: {{ $value | quote }}
+  {{- end }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: brezel-spa
+  namespace: {{ .Values.namespace }}
+data:
+  config.js: |
+    var config = (() => { return {{ toJson (dict "VUE_APP_API_URL" (printf "%s://%s" (.Values.secure | ternary "https" "http") (include "brezel.primaryApiHostname" .))) }}; })();
+---
+{{- if .Values.with_database_pod }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: brezel-mysql
+  namespace: {{ .Values.namespace }}
+data:
+  MYSQL_DATABASE: "brezel_meta"
+  MYSQL_ROOT_HOST: "%"
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: brezel-fastcgi-laravel
+  namespace: {{ .Values.namespace }}
+data:
+  SCRIPT_FILENAME: "/app/public/index.php"

@@ -1,0 +1,113 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: brezel
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.api_replicas }}
+  selector:
+    matchLabels:
+      app: brezel
+  template:
+    metadata:
+      labels:
+        app: brezel
+        configVersion: {{ include "brezel.configVersion" . }}
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - brezel
+            namespaces:
+            - {{ .Values.namespace }}
+            topologyKey: kubernetes.io/hostname
+      securityContext:
+        fsGroup: 33
+        fsGroupChangePolicy: OnRootMismatch
+      initContainers:
+      - name: prepare-storage-container
+        image: busybox
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - printenv | awk -F= 'BEGIN{OFS=FS} {if ($1 ~ /^[[:alpha:]_][[:alnum:]_]*$/) printf "%s=\"%s\"\n", $1, substr($0, index($0,$2))}' > /app/storage/.env
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: brezel-storage
+          mountPath: /app/storage
+        envFrom:
+        - configMapRef:
+            name: brezel-api
+        - secretRef:
+            name: brezel-api
+        resources:
+          limits:
+            cpu: {{ .Values.brezel_init_container_resources.limits.cpu }}
+            memory: {{ .Values.brezel_init_container_resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.brezel_init_container_resources.requests.cpu }}
+            memory: {{ .Values.brezel_init_container_resources.requests.memory }}
+      - name: wait-for
+        image: ghcr.io/patrickdappollonio/wait-for:latest
+        command:
+        - /wait-for
+        args:
+        - --host="{{ if .Values.with_database_pod }}{{ include "brezel.mysqlServiceName" . }}{{ else }}{{ .Values.db_host }}{{ end }}:{{ if .Values.with_database_pod }}3306{{ else }}{{ .Values.db_port }}{{ end }}"
+        - --verbose
+        resources:
+          limits:
+            cpu: {{ .Values.brezel_init_container_resources.limits.cpu }}
+            memory: {{ .Values.brezel_init_container_resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.brezel_init_container_resources.requests.cpu }}
+            memory: {{ .Values.brezel_init_container_resources.requests.memory }}
+      containers:
+      - name: brezel-api
+        image: {{ .Values.image }}
+        imagePullPolicy: Always
+        workingDir: /app
+        ports:
+        - containerPort: 80
+        envFrom:
+        - configMapRef:
+            name: brezel-api
+        - secretRef:
+            name: brezel-api
+        volumeMounts:
+        - name: brezel-storage
+          mountPath: /app/storage
+        resources:
+          limits:
+            cpu: {{ .Values.brezel_resources.limits.cpu }}
+            memory: {{ .Values.brezel_resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.brezel_resources.requests.cpu }}
+            memory: {{ .Values.brezel_resources.requests.memory }}
+      imagePullSecrets:
+      - name: gitlab-registry
+      volumes:
+      - name: brezel-storage
+        emptyDir: {}
+  strategy:
+    canary:
+      stableService: brezel
+      canaryService: brezel-canary
+      trafficRouting:
+        nginx:
+          stableIngress: brezel-api
+      steps:
+      - setWeight: 20
+      - pause: {}
+      - setWeight: 40
+      - pause: {duration: 10}
+      - setWeight: 60
+      - pause: {duration: 10}
+      - setWeight: 80
+      - pause: {duration: 10}

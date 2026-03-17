@@ -1,0 +1,57 @@
+{{- if .Values.with_database_pod }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: brezel-mysql
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brezel-mysql
+  template:
+    metadata:
+      labels:
+        app: brezel-mysql
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - brezel
+            namespaces:
+            - {{ .Values.namespace }}
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - name: brezel-mysql
+        image: mysql:8.0
+        imagePullPolicy: Always
+        command:
+        - mysqld
+        - --disable-log-bin
+        envFrom:
+        - configMapRef:
+            name: brezel-mysql
+        - secretRef:
+            name: brezel-mysql
+        volumeMounts:
+        - name: brezel-db
+          mountPath: /var/lib/mysql
+        resources:
+          limits:
+            cpu: {{ .Values.mysql_resources.limits.cpu }}
+            memory: {{ .Values.mysql_resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.mysql_resources.requests.cpu }}
+            memory: {{ .Values.mysql_resources.requests.memory }}
+      imagePullSecrets:
+      - name: gitlab-registry
+      volumes:
+      - name: brezel-db
+        emptyDir: {}
+  serviceName: ""
+{{- end }}

@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: brotcast
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brotcast
+  template:
+    metadata:
+      labels:
+        app: brotcast
+    spec:
+      containers:
+      - name: brotcast
+        image: {{ .Values.brotcast_image }}
+        ports:
+        - containerPort: 8086
+        env:
+        - name: BROADCAST_DRIVER
+          value: reverb
+        - name: BREZEL_BROTCAST_SERVER_PORT
+          value: "8086"
+        - name: BREZEL_BROTCAST_APP_ID
+          value: brezel
+        - name: BREZEL_BROTCAST_KEY
+          value: brotcast
+        - name: BREZEL_BROTCAST_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: brezel-api
+              key: BREZEL_BROTCAST_SECRET
+      imagePullSecrets:
+      - name: gitlab-registry
+  strategy:
+    canary:
+      stableService: brotcast
+      canaryService: brotcast-canary
+      trafficRouting:
+        nginx:
+          stableIngress: brotcast
+      steps:
+      - setWeight: 20
+      - pause: {}
+      - setWeight: 40
+      - pause: {duration: 10}
+      - setWeight: 60
+      - pause: {duration: 10}
+      - setWeight: 80
+      - pause: {duration: 10}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: brotcast-canary
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: brotcast
+  ports:
+  - name: brotcast
+    port: 8086
+    targetPort: 8086
