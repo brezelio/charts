@@ -46,7 +46,7 @@ spec:
         - configMapRef:
             name: brezel-api
         - secretRef:
-            name: brezel-api
+            name: {{ include "brezel.runtimeSecretName" . }}
         resources:
           limits:
             cpu: {{ .Values.brezel_init_container_resources.limits.cpu }}
@@ -79,7 +79,7 @@ spec:
         - configMapRef:
             name: brezel-api
         - secretRef:
-            name: brezel-api
+            name: {{ include "brezel.runtimeSecretName" . }}
         volumeMounts:
         - name: brezel-storage
           mountPath: /app/storage

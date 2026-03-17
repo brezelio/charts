@@ -30,7 +30,7 @@ spec:
         - name: BREZEL_BROTCAST_SECRET
           valueFrom:
             secretKeyRef:
-              name: brezel-api
+              name: {{ include "brezel.runtimeSecretName" . }}
               key: BREZEL_BROTCAST_SECRET
       imagePullSecrets:
       - name: gitlab-registry

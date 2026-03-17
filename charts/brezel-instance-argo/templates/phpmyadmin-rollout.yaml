@@ -25,7 +25,7 @@ spec:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: brezel-api
+              name: {{ include "brezel.runtimeSecretName" . }}
               key: MYSQL_PASSWORD
         - name: UPLOAD_LIMIT
           value: "2048M"

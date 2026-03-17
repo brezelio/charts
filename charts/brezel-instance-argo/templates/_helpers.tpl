@@ -58,6 +58,17 @@ brezel-mysql
 {{- end }}
 
 {{/*
+Runtime Secret Name
+*/}}
+{{- define "brezel.runtimeSecretName" -}}
+{{- if .Values.existing_secret_name -}}
+{{- .Values.existing_secret_name -}}
+{{- else -}}
+brezel-api
+{{- end -}}
+{{- end }}
+
+{{/*
 Primary API hostname
 */}}
 {{- define "brezel.primaryApiHostname" -}}

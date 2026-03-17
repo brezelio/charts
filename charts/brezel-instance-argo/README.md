@@ -67,6 +67,7 @@ The following table lists the configurable parameters of the Brezel chart and th
 | `spa_image` | Brezel SPA image | `""` |
 | `brotcast_image` | Brotcast image | `""` |
 | `global_gitlab_registry_data` | Docker config JSON for pulling images | `""` |
+| `existing_secret_name` | Existing Kubernetes Secret to use instead of rendering `brezel-api` | `""` |
 | `secure` | Enable HTTPS/TLS | `true` |
 | `api_hostnames` | List of hostnames for the API | `[]` |
 | `hostnames` | List of hostnames for the SPA | `[]` |
@@ -144,6 +145,16 @@ workers:
 ```
 
 If `command` is omitted, the chart builds `php bakery work` automatically from `queues`, `sleep`, `tries`, and `timeout`.
+
+### Existing Secret
+
+If runtime secrets are provisioned outside Helm, for example by Terraform, set `existing_secret_name`.
+
+```yaml
+existing_secret_name: kab-runtime
+```
+
+The chart will then reference that Secret instead of rendering its own `brezel-api` Secret.
 
 ### System Environments
 
