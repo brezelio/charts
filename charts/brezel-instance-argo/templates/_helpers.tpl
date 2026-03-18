@@ -106,7 +106,7 @@ SPA Config Version
 Bootstrap Job Name
 */}}
 {{- define "brezel.bootstrapJobName" -}}
-{{- $config := dict "image" .Values.image "bootstrap" .Values.bootstrap "env" .Values.env "secret_env" .Values.secret_env "system_envs" .Values.system_envs "system_secret_envs" .Values.system_secret_envs "default_system" .Values.default_system "db" (dict "with_database_pod" .Values.with_database_pod "db_host" .Values.db_host "db_port" .Values.db_port "db_name" .Values.db_name "db_user" .Values.db_user) -}}
+{{- $config := dict "image" .Values.image "bootstrap" .Values.bootstrap "env" .Values.env "secret_env" .Values.secret_env "system_envs" .Values.system_envs "system_secret_envs" .Values.system_secret_envs "default_system" .Values.default_system "db" (dict "with_database_pod" .Values.with_database_pod "db_host" .Values.db_host "db_port" .Values.db_port "db_name" .Values.db_name "db_user" .Values.db_user) "drivers" (dict "session" .Values.session_driver "cache" .Values.cache_driver "queue" .Values.queue_driver) "prepare_storage_script" (include "brezel.prepareStorageScript" .) -}}
 {{- printf "brezel-bootstrap-%s" (sha1sum (toJson $config) | trunc 8) -}}
 {{- end }}
 
