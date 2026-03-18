@@ -75,12 +75,16 @@ spec:
         - name: brezel-storage
           mountPath: /app/storage
         resources:
+{{- if .resources }}
+{{ toYaml .resources | indent 10 }}
+{{- else }}
           limits:
-            cpu: {{ $.Values.brezel_resources.limits.cpu }}
-            memory: {{ $.Values.brezel_resources.limits.memory }}
+            cpu: {{ $.Values.worker_resources.limits.cpu }}
+            memory: {{ $.Values.worker_resources.limits.memory }}
           requests:
-            cpu: {{ $.Values.brezel_resources.requests.cpu }}
-            memory: {{ $.Values.brezel_resources.requests.memory }}
+            cpu: {{ $.Values.worker_resources.requests.cpu }}
+            memory: {{ $.Values.worker_resources.requests.memory }}
+{{- end }}
       restartPolicy: Always
       imagePullSecrets:
       - name: {{ include "brezel.imagePullSecretName" $ }}

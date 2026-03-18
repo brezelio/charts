@@ -80,13 +80,53 @@ cronjob:
   enabled: true
   schedule: "* * * * *"
   command: "/usr/local/bin/php bakery schedule"
+rollouts:
+  api:
+    pause_duration_seconds: 60
+  spa:
+    type: deployment
+    pause_duration_seconds: 0
+  brotcast:
+    type: deployment
+    pause_duration_seconds: 0
+  phpmyadmin:
+    type: deployment
+    pause_duration_seconds: 0
 brezel_resources:
   limits:
-    cpu: "500m"
-    memory: "512Mi"
+    cpu: "2000m"
+    memory: "3Gi"
   requests:
+    cpu: "500m"
+    memory: "1Gi"
+worker_resources:
+  limits:
+    cpu: "1000m"
+    memory: "1Gi"
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+spa_resources:
+  limits:
     cpu: "100m"
     memory: "128Mi"
+  requests:
+    cpu: "25m"
+    memory: "32Mi"
+brotcast_resources:
+  limits:
+    cpu: "250m"
+    memory: "256Mi"
+  requests:
+    cpu: "50m"
+    memory: "64Mi"
+phpmyadmin_resources:
+  limits:
+    cpu: "100m"
+    memory: "128Mi"
+  requests:
+    cpu: "25m"
+    memory: "64Mi"
 brezel_init_container_resources:
   limits:
     cpu: "200m"

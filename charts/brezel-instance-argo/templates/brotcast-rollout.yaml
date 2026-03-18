@@ -1,5 +1,10 @@
+{{- if eq .Values.rollouts.brotcast.type "canary" }}
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
+{{- else }}
+apiVersion: apps/v1
+kind: Deployment
+{{- end }}
 metadata:
   name: brotcast
   namespace: {{ .Values.namespace }}
@@ -16,6 +21,7 @@ spec:
       containers:
       - name: brotcast
         image: {{ .Values.brotcast_image }}
+        imagePullPolicy: Always
         ports:
         - containerPort: 8086
         env:
@@ -32,8 +38,16 @@ spec:
             secretKeyRef:
               name: {{ include "brezel.runtimeSecretName" . }}
               key: BREZEL_BROTCAST_SECRET
+        resources:
+          limits:
+            cpu: {{ .Values.brotcast_resources.limits.cpu }}
+            memory: {{ .Values.brotcast_resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.brotcast_resources.requests.cpu }}
+            memory: {{ .Values.brotcast_resources.requests.memory }}
       imagePullSecrets:
       - name: {{ include "brezel.imagePullSecretName" . }}
+{{- if eq .Values.rollouts.brotcast.type "canary" }}
   strategy:
     canary:
       stableService: brotcast
@@ -43,13 +57,17 @@ spec:
           stableIngress: brotcast
       steps:
       - setWeight: 20
-      - pause: {}
+      - pause:
+          duration: {{ .Values.rollouts.brotcast.pause_duration_seconds }}
       - setWeight: 40
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.brotcast.pause_duration_seconds }}
       - setWeight: 60
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.brotcast.pause_duration_seconds }}
       - setWeight: 80
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.brotcast.pause_duration_seconds }}
 ---
 apiVersion: v1
 kind: Service
@@ -63,3 +81,4 @@ spec:
   - name: brotcast
     port: 8086
     targetPort: 8086
+{{- end }}

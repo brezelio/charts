@@ -1,5 +1,10 @@
+{{- if eq .Values.rollouts.phpmyadmin.type "canary" }}
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
+{{- else }}
+apiVersion: apps/v1
+kind: Deployment
+{{- end }}
 metadata:
   name: phpmyadmin
   namespace: {{ .Values.namespace }}
@@ -33,6 +38,14 @@ spec:
           value: "600"
         ports:
         - containerPort: 80
+        resources:
+          limits:
+            cpu: {{ .Values.phpmyadmin_resources.limits.cpu }}
+            memory: {{ .Values.phpmyadmin_resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.phpmyadmin_resources.requests.cpu }}
+            memory: {{ .Values.phpmyadmin_resources.requests.memory }}
+{{- if eq .Values.rollouts.phpmyadmin.type "canary" }}
   strategy:
     canary:
       stableService: phpmyadmin
@@ -42,13 +55,17 @@ spec:
           stableIngress: phpmyadmin
       steps:
       - setWeight: 20
-      - pause: {}
+      - pause:
+          duration: {{ .Values.rollouts.phpmyadmin.pause_duration_seconds }}
       - setWeight: 40
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.phpmyadmin.pause_duration_seconds }}
       - setWeight: 60
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.phpmyadmin.pause_duration_seconds }}
       - setWeight: 80
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.phpmyadmin.pause_duration_seconds }}
 ---
 apiVersion: v1
 kind: Service
@@ -61,3 +78,4 @@ spec:
   ports:
   - port: 80
     targetPort: 80
+{{- end }}

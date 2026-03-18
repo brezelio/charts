@@ -107,10 +107,14 @@ spec:
           stableIngress: brezel-api
       steps:
       - setWeight: 20
-      - pause: {}
+      - pause:
+          duration: {{ .Values.rollouts.api.pause_duration_seconds }}
       - setWeight: 40
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.api.pause_duration_seconds }}
       - setWeight: 60
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.api.pause_duration_seconds }}
       - setWeight: 80
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.api.pause_duration_seconds }}

@@ -1,5 +1,10 @@
+{{- if eq .Values.rollouts.spa.type "canary" }}
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
+{{- else }}
+apiVersion: apps/v1
+kind: Deployment
+{{- end }}
 metadata:
   name: brezel-spa
   namespace: {{ .Values.namespace }}
@@ -21,6 +26,13 @@ spec:
         workingDir: /usr/share/nginx/html
         ports:
         - containerPort: 80
+        resources:
+          limits:
+            cpu: {{ .Values.spa_resources.limits.cpu }}
+            memory: {{ .Values.spa_resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.spa_resources.requests.cpu }}
+            memory: {{ .Values.spa_resources.requests.memory }}
         volumeMounts:
         - name: config-volume
           mountPath: /usr/share/nginx/html/config.js
@@ -32,6 +44,7 @@ spec:
       - name: config-volume
         configMap:
           name: brezel-spa
+{{- if eq .Values.rollouts.spa.type "canary" }}
   strategy:
     canary:
       stableService: brezel-spa
@@ -41,13 +54,17 @@ spec:
           stableIngress: brezel-spa
       steps:
       - setWeight: 20
-      - pause: {}
+      - pause:
+          duration: {{ .Values.rollouts.spa.pause_duration_seconds }}
       - setWeight: 40
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.spa.pause_duration_seconds }}
       - setWeight: 60
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.spa.pause_duration_seconds }}
       - setWeight: 80
-      - pause: {duration: 10}
+      - pause:
+          duration: {{ .Values.rollouts.spa.pause_duration_seconds }}
 ---
 apiVersion: v1
 kind: Service
@@ -60,4 +77,4 @@ spec:
   ports:
   - port: 80
     targetPort: 80
-
+{{- end }}
