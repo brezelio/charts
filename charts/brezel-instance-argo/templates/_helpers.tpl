@@ -111,20 +111,12 @@ Bootstrap Job Name
 {{- end }}
 
 {{/*
-Prepare ephemeral storage with runtime env and persisted key material.
+Prepare ephemeral storage with runtime env.
 */}}
 {{- define "brezel.prepareStorageScript" -}}
 set -eu
 mkdir -p /app/storage
 printenv | awk -F= 'BEGIN{OFS=FS} {if ($1 ~ /^[[:alpha:]_][[:alnum:]_]*$/) printf "%s=\"%s\"\n", $1, substr($0, index($0,$2))}' > /app/storage/.env
-if [ -n "${OAUTH_PRIVATE_KEY:-}" ]; then
-  printf "%s" "${OAUTH_PRIVATE_KEY}" > /app/storage/oauth-private.key
-  chmod 600 /app/storage/oauth-private.key
-fi
-if [ -n "${OAUTH_PUBLIC_KEY:-}" ]; then
-  printf "%s" "${OAUTH_PUBLIC_KEY}" > /app/storage/oauth-public.key
-  chmod 600 /app/storage/oauth-public.key
-fi
 {{- end }}
 
 {{/*
