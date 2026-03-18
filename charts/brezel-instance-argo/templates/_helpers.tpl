@@ -117,6 +117,16 @@ Prepare ephemeral storage with runtime env.
 set -eu
 mkdir -p /app/storage
 printenv | awk -F= 'BEGIN{OFS=FS} {if ($1 ~ /^[[:alpha:]_][[:alnum:]_]*$/) printf "%s=\"%s\"\n", $1, substr($0, index($0,$2))}' > /app/storage/.env
+cat > /app/storage/workers.supervisord.conf <<'EOF'
+[program:brezel-default-queue]
+autostart=false
+autorestart=false
+startsecs=0
+exitcodes=0
+command=/bin/sh -c 'exit 0'
+stdout_logfile=/dev/stdout
+stderr_logfile=/dev/stderr
+EOF
 {{- end }}
 
 {{/*
