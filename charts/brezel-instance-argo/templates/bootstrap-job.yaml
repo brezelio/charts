@@ -24,7 +24,8 @@ spec:
         - /bin/sh
         - -c
         args:
-        - printenv | awk -F= 'BEGIN{OFS=FS} {if ($1 ~ /^[[:alpha:]_][[:alnum:]_]*$/) printf "%s=\"%s\"\n", $1, substr($0, index($0,$2))}' > /app/storage/.env
+        - |
+{{ include "brezel.prepareStorageScript" . | indent 10 }}
         securityContext:
           runAsUser: 0
         volumeMounts:
