@@ -82,7 +82,7 @@ spec:
             memory: {{ $.Values.brezel_resources.requests.memory }}
       restartPolicy: Always
       imagePullSecrets:
-      - name: gitlab-registry
+      - name: {{ include "brezel.imagePullSecretName" $ }}
       volumes:
       - name: brezel-storage
         emptyDir: {}

@@ -2,6 +2,7 @@ namespace: default
 cluster_issuer: ""
 default_system: ""
 global_gitlab_registry_data: ""
+existing_image_pull_secret_name: ""
 existing_secret_name: ""
 api_replicas: 1
 with_database_pod: true

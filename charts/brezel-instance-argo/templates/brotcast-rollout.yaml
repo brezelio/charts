@@ -33,7 +33,7 @@ spec:
               name: {{ include "brezel.runtimeSecretName" . }}
               key: BREZEL_BROTCAST_SECRET
       imagePullSecrets:
-      - name: gitlab-registry
+      - name: {{ include "brezel.imagePullSecretName" . }}
   strategy:
     canary:
       stableService: brotcast

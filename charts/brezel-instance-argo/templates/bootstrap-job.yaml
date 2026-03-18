@@ -80,7 +80,7 @@ spec:
             cpu: {{ .Values.brezel_init_container_resources.requests.cpu }}
             memory: {{ .Values.brezel_init_container_resources.requests.memory }}
       imagePullSecrets:
-      - name: gitlab-registry
+      - name: {{ include "brezel.imagePullSecretName" . }}
       volumes:
       - name: brezel-storage
         emptyDir: {}

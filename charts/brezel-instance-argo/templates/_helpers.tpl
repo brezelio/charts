@@ -69,6 +69,17 @@ brezel-api
 {{- end }}
 
 {{/*
+Image Pull Secret Name
+*/}}
+{{- define "brezel.imagePullSecretName" -}}
+{{- if .Values.existing_image_pull_secret_name -}}
+{{- .Values.existing_image_pull_secret_name -}}
+{{- else -}}
+gitlab-registry
+{{- end -}}
+{{- end }}
+
+{{/*
 Primary API hostname
 */}}
 {{- define "brezel.primaryApiHostname" -}}

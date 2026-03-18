@@ -67,6 +67,7 @@ The following table lists the configurable parameters of the Brezel chart and th
 | `spa_image` | Brezel SPA image | `""` |
 | `brotcast_image` | Brotcast image | `""` |
 | `global_gitlab_registry_data` | Docker config JSON for pulling images | `""` |
+| `existing_image_pull_secret_name` | Existing Kubernetes pull secret to use instead of rendering `gitlab-registry` | `""` |
 | `existing_secret_name` | Existing Kubernetes Secret to use instead of rendering `brezel-api` | `""` |
 | `secure` | Enable HTTPS/TLS | `true` |
 | `api_hostnames` | List of hostnames for the API | `[]` |

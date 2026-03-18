@@ -27,7 +27,7 @@ spec:
           subPath: config.js
           readOnly: true
       imagePullSecrets:
-      - name: gitlab-registry
+      - name: {{ include "brezel.imagePullSecretName" . }}
       volumes:
       - name: config-volume
         configMap:
