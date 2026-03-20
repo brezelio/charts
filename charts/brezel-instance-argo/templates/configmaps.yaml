@@ -21,6 +21,7 @@ data:
   BREZEL_BROTCAST_APP_CLUSTER: "mt1"
   BREZEL_EXPORT_URL: "{{ if .Values.secure }}https{{ else }}http{{ end }}://{{ .Values.export_hostname }}"
   BREZEL_SYSTEM_DATABASE_PREFIX: "brezel_"
+  BREZEL_JOBS_QUEUE_USE_SYSTEM_IDENTIFIER: "true"
   DEFAULT_SYSTEM: "{{ .Values.default_system }}"
   BACKUP_NOTIFICATIONS_MAIL_TO: "dev@ki-bro.com"
   SESSION_DRIVER: "{{ .Values.session_driver }}"
