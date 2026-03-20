@@ -47,6 +47,7 @@ bootstrap:
   enabled: true
   ttl_seconds_after_finished: 600
   backoff_limit: 3
+  env: {}
   command: >-
     php bakery init --force &&
     php bakery migrate --force &&
@@ -134,6 +135,13 @@ brezel_init_container_resources:
   requests:
     cpu: "50m"
     memory: "64Mi"
+bootstrap_resources:
+  limits:
+    cpu: "1000m"
+    memory: "1Gi"
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
 session_driver: "database"
 cache_driver: "database"
 queue_driver: "database"
