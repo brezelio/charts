@@ -90,7 +90,7 @@ Primary API hostname
 Config Version
 */}}
 {{- define "brezel.configVersion" -}}
-{{- $config := dict "env" .Values.env "secret_env" .Values.secret_env "system_envs" .Values.system_envs "system_secret_envs" .Values.system_secret_envs -}}
+{{- $config := dict "env" .Values.env "secret_env" .Values.secret_env "system_envs" .Values.system_envs "system_secret_envs" .Values.system_secret_envs "drivers" (dict "session" .Values.session_driver "cache" .Values.cache_driver "queue" .Values.queue_driver) "prepare_storage_script" (include "brezel.prepareStorageScript" .) -}}
 {{- sha1sum (toJson $config) -}}
 {{- end }}
 
@@ -115,7 +115,12 @@ Prepare ephemeral storage with runtime env.
 */}}
 {{- define "brezel.prepareStorageScript" -}}
 set -eu
-mkdir -p /app/storage
+mkdir -p \
+  /app/storage/framework/cache/data \
+  /app/storage/framework/sessions \
+  /app/storage/framework/testing \
+  /app/storage/framework/views \
+  /app/storage/logs
 printenv | awk -F= 'BEGIN{OFS=FS} {if ($1 ~ /^[[:alpha:]_][[:alnum:]_]*$/) printf "%s=\"%s\"\n", $1, substr($0, index($0,$2))}' > /app/storage/.env
 cat > /app/storage/workers.supervisord.conf <<'EOF'
 [program:brezel-default-queue]
@@ -127,6 +132,8 @@ command=/bin/sh -c 'exit 0'
 stdout_logfile=/dev/stdout
 stderr_logfile=/dev/stderr
 EOF
+chown -R 33:33 /app/storage
+chmod -R u=rwX,g=rwX,o= /app/storage
 {{- end }}
 
 {{/*
