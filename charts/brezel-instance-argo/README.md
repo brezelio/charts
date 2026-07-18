@@ -120,9 +120,9 @@ s3_endpoint: "https://s3.fr-par.scw.cloud"
 For KAB-style setups, bootstrap and async workers should be explicit Kubernetes resources.
 The bootstrap commands run only in the dedicated Job, not in the API pods, so `init`, `migrate`, `system create`, `apply`, and `load` are no longer executed per replica.
 The default `modern` bootstrap uses the public `php bakery` CLI. For Brezel releases
-from before the bootstrap change, select `bootstrap.flavor: legacy`. That mode invokes
-the `brezel:*` Artisan commands directly so old wrappers propagate failures correctly
-and creates the `.env` file required by the old one-time key initialization.
+from before the bootstrap change, select `bootstrap.flavor: legacy`. It keeps the
+public Bakery CLI and creates the `.env` file required by the old one-time key
+initialization before starting the regular bootstrap sequence.
 
 ```yaml
 default_system: kab
