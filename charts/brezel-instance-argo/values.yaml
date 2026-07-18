@@ -68,6 +68,7 @@ bootstrap:
     if [ -n "${DEFAULT_SYSTEM}" ]; then
       php bakery system create "${DEFAULT_SYSTEM}"
       php bakery migrate "${DEFAULT_SYSTEM}" --force
+      php -r 'require "vendor/autoload.php"; $brezel = new App\Brezel(); $brezel->setBasePath(realpath(".")); $brezel->console(); $system = App\System\System::byIdentifier((string) getenv("DEFAULT_SYSTEM")); if ($system === null) { throw new RuntimeException("Default system not found after migration."); } $system->initPassport();'
       php -d memory_limit=1G bakery apply
       php bakery load --force
     fi

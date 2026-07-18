@@ -125,7 +125,9 @@ from before the bootstrap change, select `bootstrap.flavor: legacy`. It keeps th
 public Bakery CLI and creates the `.env` file required by the old one-time key
 initialization before starting the regular bootstrap sequence. After creating the
 system it explicitly migrates its externally managed database, as older releases do
-not do that as part of `system create`.
+not do that as part of `system create`. It then initializes the system Passport
+clients after the OAuth tables exist; Brezel 0.118 expects the password grant client
+at ID 2 during login.
 
 Legacy PHP-FPM images additionally set `api_runtime: fpm`. The chart then starts
 `php-fpm` directly, exposes port 9000 through the Service, and configures the NGINX
