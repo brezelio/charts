@@ -82,6 +82,7 @@ The following table lists the configurable parameters of the Brezel chart and th
 | `system_envs` | Non-secret system-specific environment variables (nested map) | `{}` |
 | `system_secret_envs` | Secret system-specific environment variables (nested map) | `{}` |
 | `default_system` | Default system identifier used by the bootstrap job | `""` |
+| `api_runtime` | API serving mode: `http` for modern images or `fpm` for legacy PHP-FPM images | `http` |
 | `bootstrap.enabled` | Enable the bootstrap Job | `true` |
 | `bootstrap.flavor` | Bootstrap compatibility mode: `modern` uses `php bakery`, `legacy` supports Brezel releases before the bootstrap change | `modern` |
 | `bootstrap.command` | Bootstrap command executed in the Job | see `values.yaml` |
@@ -125,6 +126,10 @@ public Bakery CLI and creates the `.env` file required by the old one-time key
 initialization before starting the regular bootstrap sequence. After creating the
 system it explicitly migrates its externally managed database, as older releases do
 not do that as part of `system create`.
+
+Legacy PHP-FPM images additionally set `api_runtime: fpm`. The chart then starts
+`php-fpm` directly, exposes port 9000 through the Service, and configures the NGINX
+Ingress FastCGI backend. Provisioning remains exclusively in the bootstrap Job.
 
 ```yaml
 default_system: kab

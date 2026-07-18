@@ -8,6 +8,11 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     cert-manager.io/cluster-issuer: {{ .Values.cluster_issuer }}
     nginx.ingress.kubernetes.io/proxy-body-size: "2048m"
+    {{- if eq .Values.api_runtime "fpm" }}
+    nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
+    nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
+    nginx.ingress.kubernetes.io/fastcgi-params-configmap: "{{ .Values.namespace }}/brezel-fastcgi-laravel"
+    {{- end }}
 spec:
   tls:
   {{- if .Values.secure }}

@@ -76,8 +76,12 @@ spec:
         image: {{ .Values.image }}
         imagePullPolicy: Always
         workingDir: /app
+        {{- if eq .Values.api_runtime "fpm" }}
+        command:
+        - php-fpm
+        {{- end }}
         ports:
-        - containerPort: 80
+        - containerPort: {{ if eq .Values.api_runtime "fpm" }}9000{{ else }}80{{ end }}
         envFrom:
         - configMapRef:
             name: brezel-api

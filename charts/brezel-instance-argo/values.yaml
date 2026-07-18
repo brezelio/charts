@@ -5,6 +5,7 @@ global_gitlab_registry_data: ""
 existing_image_pull_secret_name: ""
 existing_secret_name: ""
 api_replicas: 1
+api_runtime: "http"
 with_database_pod: true
 db_host: ""
 db_port: 3306
