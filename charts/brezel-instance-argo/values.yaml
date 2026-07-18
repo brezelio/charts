@@ -66,6 +66,7 @@ bootstrap:
     php bakery migrate --force
     if [ -n "${DEFAULT_SYSTEM}" ]; then
       php bakery system create "${DEFAULT_SYSTEM}"
+      php bakery migrate "${DEFAULT_SYSTEM}" --force
       php -d memory_limit=1G bakery apply
       php bakery load --force
     fi

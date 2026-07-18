@@ -122,7 +122,9 @@ The bootstrap commands run only in the dedicated Job, not in the API pods, so `i
 The default `modern` bootstrap uses the public `php bakery` CLI. For Brezel releases
 from before the bootstrap change, select `bootstrap.flavor: legacy`. It keeps the
 public Bakery CLI and creates the `.env` file required by the old one-time key
-initialization before starting the regular bootstrap sequence.
+initialization before starting the regular bootstrap sequence. After creating the
+system it explicitly migrates its externally managed database, as older releases do
+not do that as part of `system create`.
 
 ```yaml
 default_system: kab
