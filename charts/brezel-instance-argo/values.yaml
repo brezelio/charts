@@ -48,6 +48,7 @@ bootstrap:
   ttl_seconds_after_finished: 600
   backoff_limit: 3
   env: {}
+  flavor: modern
   command: >-
     php bakery init --force &&
     php bakery migrate --force &&
@@ -55,6 +56,18 @@ bootstrap:
       php bakery system create "${DEFAULT_SYSTEM}" &&
       php -d memory_limit=1G bakery apply &&
       php bakery load --force;
+    fi
+  legacy_command: |-
+    set -eu
+    if [ ! -f .env ]; then
+      touch .env
+    fi
+    php artisan brezel:init --force
+    php artisan brezel:migrate --force
+    if [ -n "${DEFAULT_SYSTEM}" ]; then
+      php artisan brezel:system create "${DEFAULT_SYSTEM}"
+      php -d memory_limit=1G artisan brezel:apply
+      php artisan brezel:load "${DEFAULT_SYSTEM}" --force
     fi
 workers: []
 # Example:

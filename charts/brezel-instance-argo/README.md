@@ -83,7 +83,9 @@ The following table lists the configurable parameters of the Brezel chart and th
 | `system_secret_envs` | Secret system-specific environment variables (nested map) | `{}` |
 | `default_system` | Default system identifier used by the bootstrap job | `""` |
 | `bootstrap.enabled` | Enable the bootstrap Job | `true` |
+| `bootstrap.flavor` | Bootstrap compatibility mode: `modern` uses `php bakery`, `legacy` supports Brezel releases before the bootstrap change | `modern` |
 | `bootstrap.command` | Bootstrap command executed in the Job | see `values.yaml` |
+| `bootstrap.legacy_command` | Bootstrap command for `bootstrap.flavor: legacy` | see `values.yaml` |
 | `workers` | List of worker Deployments with `name`, `replicas`, `command` | `[]` |
 | `cronjob.enabled` | Enable the schedule CronJob | `true` |
 | `cronjob.command` | Command executed by the scheduler CronJob | `"/usr/local/bin/php bakery schedule"` |
@@ -117,6 +119,10 @@ s3_endpoint: "https://s3.fr-par.scw.cloud"
 
 For KAB-style setups, bootstrap and async workers should be explicit Kubernetes resources.
 The bootstrap commands run only in the dedicated Job, not in the API pods, so `init`, `migrate`, `system create`, `apply`, and `load` are no longer executed per replica.
+The default `modern` bootstrap uses the public `php bakery` CLI. For Brezel releases
+from before the bootstrap change, select `bootstrap.flavor: legacy`. That mode invokes
+the `brezel:*` Artisan commands directly so old wrappers propagate failures correctly
+and creates the `.env` file required by the old one-time key initialization.
 
 ```yaml
 default_system: kab

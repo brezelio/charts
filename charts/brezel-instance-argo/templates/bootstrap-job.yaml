@@ -64,7 +64,7 @@ spec:
         command:
         - /bin/sh
         - -c
-        - {{ .Values.bootstrap.command | quote }}
+        - {{ if eq .Values.bootstrap.flavor "legacy" }}{{ .Values.bootstrap.legacy_command | quote }}{{ else }}{{ .Values.bootstrap.command | quote }}{{ end }}
         {{- if .Values.bootstrap.env }}
         env:
         {{- range $key, $value := .Values.bootstrap.env }}
