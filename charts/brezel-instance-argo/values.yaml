@@ -158,8 +158,8 @@ bootstrap_resources:
   requests:
     cpu: "500m"
     memory: "512Mi"
-session_driver: "database"
-cache_driver: "database"
+session_driver: "file"
+cache_driver: "file"
 queue_driver: "database"
 log_channel: "stderr"
 mysql_resources:
