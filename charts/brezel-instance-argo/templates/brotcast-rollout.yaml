@@ -22,8 +22,20 @@ spec:
       - name: brotcast
         image: {{ .Values.brotcast_image }}
         imagePullPolicy: Always
+{{- if eq .Values.bootstrap.flavor "modern" }}
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - exec php bakery brotcast:serve
+{{- end }}
         ports:
         - containerPort: 8086
+        envFrom:
+        - configMapRef:
+            name: brezel-api
+        - secretRef:
+            name: {{ include "brezel.runtimeSecretName" . }}
         env:
         - name: BROADCAST_DRIVER
           value: reverb
