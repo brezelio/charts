@@ -27,7 +27,7 @@ spec:
         - /bin/sh
         - -c
         args:
-        - exec php bakery brotcast:serve
+        - exec php bakery brotcast:start
 {{- end }}
         ports:
         - containerPort: 8086
