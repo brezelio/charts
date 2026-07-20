@@ -90,7 +90,7 @@ Primary API hostname
 Config Version
 */}}
 {{- define "brezel.configVersion" -}}
-{{- $config := dict "env" .Values.env "secret_env" .Values.secret_env "system_envs" .Values.system_envs "system_secret_envs" .Values.system_secret_envs "drivers" (dict "session" .Values.session_driver "cache" .Values.cache_driver "queue" .Values.queue_driver) "prepare_storage_script" (include "brezel.prepareStorageScript" .) -}}
+{{- $config := dict "env" .Values.env "secret_env" .Values.secret_env "system_envs" .Values.system_envs "system_secret_envs" .Values.system_secret_envs "drivers" (dict "session" .Values.session_driver "cache" .Values.cache_driver "queue" .Values.queue_driver "filesystem" .Values.filesystem_disk "tenancy" .Values.tenancy_disk) "prepare_storage_script" (include "brezel.prepareStorageScript" .) -}}
 {{- sha1sum (toJson $config) -}}
 {{- end }}
 
