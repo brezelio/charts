@@ -162,6 +162,8 @@ session_driver: "file"
 cache_driver: "file"
 queue_driver: "database"
 log_channel: "stderr"
+filesystem_disk: "s3"
+tenancy_disk: "s3"
 mysql_resources:
   limits:
     cpu: "500m"
