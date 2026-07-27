@@ -69,5 +69,5 @@ spec:
     app: brotcast
   ports:
   - name: brotcast
-    port: 8086
-    targetPort: 8086
+    port: {{ .Values.brotcast_server_port }}
+    targetPort: {{ .Values.brotcast_server_port }}

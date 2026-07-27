@@ -12,6 +12,8 @@ db_port: 3306
 image: ""
 spa_image: ""
 brotcast_image: ""
+brotcast_server_port: 8086
+brotcast_broadcast_driver: "reverb"
 secure: true
 api_hostnames:
   - api.example.invalid

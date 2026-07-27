@@ -30,7 +30,7 @@ spec:
         - exec php bakery brotcast:start
 {{- end }}
         ports:
-        - containerPort: 8086
+        - containerPort: {{ .Values.brotcast_server_port }}
         envFrom:
         - configMapRef:
             name: brezel-api
@@ -38,14 +38,36 @@ spec:
             name: {{ include "brezel.runtimeSecretName" . }}
         env:
         - name: BROADCAST_DRIVER
-          value: reverb
+          value: {{ .Values.brotcast_broadcast_driver | quote }}
         - name: BREZEL_BROTCAST_SERVER_PORT
-          value: "8086"
+          value: {{ .Values.brotcast_server_port | quote }}
         - name: BREZEL_BROTCAST_APP_ID
           value: brezel
         - name: BREZEL_BROTCAST_KEY
           value: brotcast
         - name: BREZEL_BROTCAST_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "brezel.runtimeSecretName" . }}
+              key: BREZEL_BROTCAST_SECRET
+        # The separate legacy Brotcast image has used both the old Pusher
+        # variable names and the current Soketi names across releases.
+        - name: PUSHER_APP_ID
+          value: brezel
+        - name: PUSHER_APP_KEY
+          value: brotcast
+        - name: PUSHER_APP_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "brezel.runtimeSecretName" . }}
+              key: BREZEL_BROTCAST_SECRET
+        - name: SOKETI_PORT
+          value: {{ .Values.brotcast_server_port | quote }}
+        - name: SOKETI_DEFAULT_APP_ID
+          value: brezel
+        - name: SOKETI_DEFAULT_APP_KEY
+          value: brotcast
+        - name: SOKETI_DEFAULT_APP_SECRET
           valueFrom:
             secretKeyRef:
               name: {{ include "brezel.runtimeSecretName" . }}
@@ -91,6 +113,6 @@ spec:
     app: brotcast
   ports:
   - name: brotcast
-    port: 8086
-    targetPort: 8086
+    port: {{ .Values.brotcast_server_port }}
+    targetPort: {{ .Values.brotcast_server_port }}
 {{- end }}

@@ -66,6 +66,8 @@ The following table lists the configurable parameters of the Brezel chart and th
 | `image` | Brezel API image | `""` |
 | `spa_image` | Brezel SPA image | `""` |
 | `brotcast_image` | Brotcast image | `""` |
+| `brotcast_server_port` | Internal Brotcast container and service port | `8086` |
+| `brotcast_broadcast_driver` | Laravel broadcast connection used by the API/Brotcast container | `"reverb"` |
 | `global_gitlab_registry_data` | Docker config JSON for pulling images | `""` |
 | `existing_image_pull_secret_name` | Existing Kubernetes pull secret to use instead of rendering `gitlab-registry` | `""` |
 | `existing_secret_name` | Existing Kubernetes Secret to use instead of rendering `brezel-api` | `""` |
