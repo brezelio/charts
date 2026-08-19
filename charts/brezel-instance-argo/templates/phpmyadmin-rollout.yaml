@@ -1,3 +1,4 @@
+{{- if .Values.components.phpmyadmin.enabled }}
 {{- if eq .Values.rollouts.phpmyadmin.type "canary" }}
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
@@ -78,4 +79,5 @@ spec:
   ports:
   - port: 80
     targetPort: 80
+{{- end }}
 {{- end }}

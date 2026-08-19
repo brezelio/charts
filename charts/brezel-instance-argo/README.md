@@ -67,6 +67,7 @@ The following table lists the configurable parameters of the Brezel chart and th
 | `spa_image` | Brezel SPA image | `""` |
 | `spa_runtime_config` | Additional or overriding values exposed to the SPA through `/config.js` | `{}` |
 | `brotcast_image` | Brotcast image | `""` |
+| `components.phpmyadmin.enabled` | Deploy the phpMyAdmin workload, Service and Ingress | `false` |
 | `brotcast_server_port` | Internal Brotcast container and service port | `8086` |
 | `brotcast_broadcast_driver` | Laravel broadcast connection used by the API/Brotcast container | `"reverb"` |
 | `global_gitlab_registry_data` | Docker config JSON for pulling images | `""` |

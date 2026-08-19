@@ -13,6 +13,9 @@ image: ""
 spa_image: ""
 spa_runtime_config: {}
 brotcast_image: ""
+components:
+  phpmyadmin:
+    enabled: false
 brotcast_server_port: 8086
 brotcast_broadcast_driver: "reverb"
 secure: true
