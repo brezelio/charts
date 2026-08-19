@@ -11,6 +11,7 @@ db_host: ""
 db_port: 3306
 image: ""
 spa_image: ""
+spa_runtime_config: {}
 brotcast_image: ""
 brotcast_server_port: 8086
 brotcast_broadcast_driver: "reverb"

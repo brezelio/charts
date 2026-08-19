@@ -57,7 +57,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 data:
   config.js: |
-    var config = (() => { return {{ toJson (dict "VUE_APP_API_URL" (printf "%s://%s" (.Values.secure | ternary "https" "http") (include "brezel.primaryApiHostname" .))) }}; })();
+    var config = (() => { return {{ toJson (mergeOverwrite (dict "VUE_APP_API_URL" (printf "%s://%s" (.Values.secure | ternary "https" "http") (include "brezel.primaryApiHostname" .)) "VUE_APP_FILE_UPLOAD_API_URL" (printf "%s://%s" (.Values.secure | ternary "https" "http") (include "brezel.primaryApiHostname" .)) "VUE_APP_SYSTEM" .Values.default_system) .Values.spa_runtime_config) }}; })();
 ---
 {{- if .Values.with_database_pod }}
 apiVersion: v1
