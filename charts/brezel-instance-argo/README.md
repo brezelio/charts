@@ -104,6 +104,8 @@ The following table lists the configurable parameters of the Brezel chart and th
 | `s3_bucket` | S3 Bucket name | `""` |
 | `s3_endpoint` | S3 Endpoint URL | `""` |
 | `storage` | Size of ephemeral storage request | `10Gi` |
+| `storage_uid` | UID that owns the ephemeral application storage | `33` |
+| `storage_gid` | GID that owns the ephemeral application storage and is used as the pod `fsGroup` | `33` |
 | `db_storage` | Deprecated; internal MySQL uses ephemeral storage when enabled | `10Gi` |
 
 ### S3 Configuration

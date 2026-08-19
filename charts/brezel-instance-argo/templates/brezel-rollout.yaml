@@ -29,7 +29,7 @@ spec:
               - {{ .Values.namespace }}
               topologyKey: kubernetes.io/hostname
       securityContext:
-        fsGroup: 33
+        fsGroup: {{ .Values.storage_gid }}
         fsGroupChangePolicy: OnRootMismatch
       initContainers:
       - name: prepare-storage-container

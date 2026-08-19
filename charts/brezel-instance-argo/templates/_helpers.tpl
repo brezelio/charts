@@ -132,7 +132,7 @@ command=/bin/sh -c 'exit 0'
 stdout_logfile=/dev/stdout
 stderr_logfile=/dev/stderr
 EOF
-chown -R 33:33 /app/storage
+chown -R {{ .Values.storage_uid }}:{{ .Values.storage_gid }} /app/storage
 chmod -R u=rwX,g=rwX,o= /app/storage
 {{- end }}
 

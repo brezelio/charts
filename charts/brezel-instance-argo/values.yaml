@@ -45,6 +45,8 @@ s3_root: ""
 storage_access_modes: ["ReadWriteOnce"]
 storage_class: "default"
 storage: "10Gi"
+storage_uid: 33
+storage_gid: 33
 db_storage: "10Gi"
 bootstrap:
   enabled: true
