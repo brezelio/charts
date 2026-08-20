@@ -114,6 +114,7 @@ cronjob:
   command: "/usr/local/bin/php bakery schedule"
 rollouts:
   api:
+    type: canary
     pause_duration_seconds: 60
   spa:
     type: deployment
