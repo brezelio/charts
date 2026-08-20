@@ -16,6 +16,13 @@ brotcast_image: ""
 components:
   phpmyadmin:
     enabled: false
+ingresses:
+  api:
+    enabled: true
+  spa:
+    enabled: true
+  brotcast:
+    enabled: true
 brotcast_server_port: 8086
 brotcast_broadcast_driver: "reverb"
 secure: true

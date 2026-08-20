@@ -1,3 +1,4 @@
+{{- if .Values.ingresses.api.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -32,7 +33,9 @@ spec:
         path: /
         pathType: Prefix
   {{- end }}
+{{- end }}
 ---
+{{- if .Values.ingresses.spa.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -61,6 +64,7 @@ spec:
         path: /
         pathType: Prefix
   {{- end }}
+{{- end }}
 ---
 {{- if .Values.components.phpmyadmin.enabled }}
 apiVersion: networking.k8s.io/v1
@@ -95,6 +99,7 @@ spec:
         pathType: Prefix
 {{- end }}
 ---
+{{- if .Values.ingresses.brotcast.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -122,3 +127,4 @@ spec:
               number: {{ .Values.brotcast_server_port }}
         path: /
         pathType: Prefix
+{{- end }}
