@@ -9,7 +9,9 @@ metadata:
     configVersion: {{ include "brezel.configVersion" . }}
 spec:
   backoffLimit: {{ .Values.bootstrap.backoff_limit }}
+  {{ if ne .Values.bootstrap.ttl_seconds_after_finished nil }}
   ttlSecondsAfterFinished: {{ .Values.bootstrap.ttl_seconds_after_finished }}
+  {{ end }}
   template:
     metadata:
       labels:

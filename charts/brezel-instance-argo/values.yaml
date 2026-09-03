@@ -61,7 +61,7 @@ storage_gid: 33
 db_storage: "10Gi"
 bootstrap:
   enabled: true
-  ttl_seconds_after_finished: 600
+  ttl_seconds_after_finished: null
   backoff_limit: 3
   env: {}
   flavor: modern
