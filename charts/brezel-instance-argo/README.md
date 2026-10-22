@@ -135,6 +135,10 @@ not do that as part of `system create`. It then initializes the system Passport
 clients after the OAuth tables exist; Brezel 0.118 expects the password grant client
 at ID 2 during login.
 
+The chart sets `BREZEL_WEB_ONLY=1` for all Brezel containers. Images built from the
+standalone Brezel template then skip bootstrapping, cron and Supervisor in their start
+script and only serve HTTP (php-fpm + nginx) when used with `api_runtime: http`.
+
 Legacy PHP-FPM images additionally set `api_runtime: fpm`. The chart then starts
 `php-fpm` directly, exposes port 9000 through the Service, and configures the NGINX
 Ingress FastCGI backend. Provisioning remains exclusively in the bootstrap Job.

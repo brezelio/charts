@@ -41,6 +41,9 @@ data:
   S3_URL: "{{ .Values.s3_url }}"
   S3_ROOT: "{{ .Values.s3_root }}"
   BREZEL_STORAGE_AUTO_CREATE_BUCKET: "{{ .Values.brezel_storage_auto_create_bucket }}"
+  # Bootstrap, scheduler and workers are separate workloads here, so images built from the
+  # standalone template only serve HTTP instead of also running them in their start script.
+  BREZEL_WEB_ONLY: "1"
   {{- range $key, $value := .Values.env }}
   {{ $key }}: {{ $value | quote }}
   {{- end }}
