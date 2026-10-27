@@ -71,6 +71,8 @@ spec:
             volumeMounts:
             - name: brezel-storage
               mountPath: /app/storage
+            resources:
+{{ toYaml .Values.cronjob.resources | indent 14 }}
           restartPolicy: OnFailure
           imagePullSecrets:
           - name: {{ include "brezel.imagePullSecretName" . }}
