@@ -110,7 +110,16 @@ workers: []
 #     command: "php bakery work --timeout=1200"
 cronjob:
   enabled: true
+  suspend: false
   schedule: "* * * * *"
+  # Skip overlap and old missed ticks; never accumulate blocked scheduler pods.
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 60
+  activeDeadlineSeconds: 300
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
   command: "/usr/local/bin/php bakery schedule"
   resources:
     requests:

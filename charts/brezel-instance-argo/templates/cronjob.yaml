@@ -6,10 +6,18 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   schedule: {{ .Values.cronjob.schedule | quote }}
+  suspend: {{ .Values.cronjob.suspend }}
+  concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy }}
+  startingDeadlineSeconds: {{ .Values.cronjob.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit }}
   jobTemplate:
     metadata:
       name: brezel-cron
     spec:
+      activeDeadlineSeconds: {{ .Values.cronjob.activeDeadlineSeconds }}
+      backoffLimit: {{ .Values.cronjob.backoffLimit }}
+      ttlSecondsAfterFinished: {{ .Values.cronjob.ttlSecondsAfterFinished }}
       template:
         metadata:
           labels:
