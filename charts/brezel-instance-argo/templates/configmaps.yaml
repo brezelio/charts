@@ -44,6 +44,13 @@ data:
   # Bootstrap, scheduler and workers are separate workloads here, so images built from the
   # standalone template only serve HTTP instead of also running them in their start script.
   BREZEL_WEB_ONLY: "1"
+  {{- /* In "http" mode the pod's nginx only sees the ingress IP, so the client IP must come from
+  X-Forwarded-For. In "fpm" mode the ingress talks FastCGI directly and REMOTE_ADDR already is the
+  client IP; trusting proxies there would let clients spoof their IP via X-Forwarded-For. */}}
+  {{- $trustedProxies := .Values.trusted_proxies | default (ternary "*" "" (eq .Values.api_runtime "http")) }}
+  {{- if $trustedProxies }}
+  TRUSTED_PROXIES: {{ $trustedProxies | quote }}
+  {{- end }}
   {{- range $key, $value := .Values.env }}
   {{ $key }}: {{ $value | quote }}
   {{- end }}

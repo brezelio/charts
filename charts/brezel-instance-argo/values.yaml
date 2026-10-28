@@ -6,6 +6,8 @@ existing_image_pull_secret_name: ""
 existing_secret_name: ""
 api_replicas: 1
 api_runtime: "http"
+# Laravel TRUSTED_PROXIES. Empty = "*" for api_runtime "http" (behind the ingress), unset for "fpm".
+trusted_proxies: ""
 with_database_pod: true
 db_host: ""
 db_port: 3306

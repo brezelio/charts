@@ -87,6 +87,7 @@ The following table lists the configurable parameters of the Brezel chart and th
 | `system_secret_envs` | Secret system-specific environment variables (nested map) | `{}` |
 | `default_system` | Default system identifier used by the bootstrap job | `""` |
 | `api_runtime` | API serving mode: `http` for modern images or `fpm` for legacy PHP-FPM images | `http` |
+| `trusted_proxies` | Laravel `TRUSTED_PROXIES` so the API sees the real client IP (e.g. for login rate limits). Empty = `*` for `api_runtime: http`, unset for `fpm` | `""` |
 | `bootstrap.enabled` | Enable the bootstrap Job | `true` |
 | `bootstrap.flavor` | Bootstrap compatibility mode: `modern` uses `php bakery`, `legacy` supports Brezel releases before the bootstrap change | `modern` |
 | `bootstrap.command` | Bootstrap command executed in the Job | see `values.yaml` |
