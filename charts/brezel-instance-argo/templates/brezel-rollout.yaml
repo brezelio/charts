@@ -77,6 +77,30 @@ spec:
             cpu: {{ .Values.brezel_init_container_resources.requests.cpu }}
             memory: {{ .Values.brezel_init_container_resources.requests.memory }}
       containers:
+      {{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
+      - name: fpm-http
+        image: {{ .Values.fpm_http.image | quote }}
+        ports:
+        - name: fpm-http
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: fpm-http
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: fpm-http
+          initialDelaySeconds: 10
+        resources:
+          {{- toYaml .Values.fpm_http.resources | nindent 10 }}
+        volumeMounts:
+        - name: fpm-http-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+      {{- end }}
       - name: brezel-api
         image: {{ .Values.image }}
         imagePullPolicy: Always
@@ -105,6 +129,11 @@ spec:
       imagePullSecrets:
       - name: {{ include "brezel.imagePullSecretName" . }}
       volumes:
+      {{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
+      - name: fpm-http-config
+        configMap:
+          name: brezel-fpm-http
+      {{- end }}
       - name: brezel-storage
         emptyDir: {}
 {{- if eq .Values.rollouts.api.type "canary" }}

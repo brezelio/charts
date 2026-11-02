@@ -1,0 +1,46 @@
+{{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: brezel-fpm-http
+  namespace: {{ .Values.namespace }}
+data:
+  nginx.conf: |
+    worker_processes auto;
+    pid /tmp/nginx.pid;
+    error_log /dev/stderr notice;
+    events { worker_connections 1024; }
+    http {
+      access_log /dev/stdout;
+      client_body_temp_path /tmp/client_temp;
+      fastcgi_temp_path /tmp/fastcgi_temp;
+      map $http_x_forwarded_proto $fastcgi_https {
+        default "";
+        https on;
+      }
+      server {
+        listen 8080;
+        client_max_body_size 4096m;
+        client_body_timeout 1800s;
+        # Preserve the existing cluster-edge PHP mitigation until separately retired.
+        if ($http_content_type ~* "multipart/form-data") { return 403; }
+        location = /healthz {
+          access_log off;
+          default_type text/plain;
+          return 200 "ok\n";
+        }
+        location / {
+          include /etc/nginx/fastcgi_params;
+          fastcgi_param SCRIPT_FILENAME /app/public/index.php;
+          fastcgi_param SCRIPT_NAME /index.php;
+          fastcgi_param HTTP_PROXY "";
+          fastcgi_param HTTPS $fastcgi_https if_not_empty;
+          fastcgi_pass 127.0.0.1:9000;
+          fastcgi_read_timeout 1800s;
+          fastcgi_send_timeout 1800s;
+          fastcgi_request_buffering off;
+          fastcgi_buffering off;
+        }
+      }
+    }
+{{- end }}

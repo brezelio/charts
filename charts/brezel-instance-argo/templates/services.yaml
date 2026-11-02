@@ -9,6 +9,13 @@ spec:
   ports:
   - port: 80
     targetPort: {{ if eq .Values.api_runtime "fpm" }}9000{{ else }}80{{ end }}
+    {{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
+    name: fastcgi
+  - name: http
+    port: 8080
+    targetPort: fpm-http
+    appProtocol: http
+    {{- end }}
 ---
 apiVersion: v1
 kind: Service
@@ -21,6 +28,13 @@ spec:
   ports:
   - port: 80
     targetPort: {{ if eq .Values.api_runtime "fpm" }}9000{{ else }}80{{ end }}
+    {{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
+    name: fastcgi
+  - name: http
+    port: 8080
+    targetPort: fpm-http
+    appProtocol: http
+    {{- end }}
 ---
 apiVersion: v1
 kind: Service
