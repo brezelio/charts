@@ -15,6 +15,10 @@ spec:
       app: brezel
   template:
     metadata:
+      {{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
+      annotations:
+        checksum/fpm-http: {{ include (print $.Template.BasePath "/fpm-http.yaml") . | sha256sum }}
+      {{- end }}
       labels:
         app: brezel
         configVersion: {{ include "brezel.configVersion" . }}
