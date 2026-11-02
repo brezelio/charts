@@ -9,6 +9,8 @@ api_runtime: "http"
 # Parallel HTTP endpoint for FPM; existing Service port 80 remains FastCGI.
 fpm_http:
   enabled: false
+  # Only enable with a NetworkPolicy restricting HTTP to the trusted gateway.
+  trusted_gateway_cidrs: []
   image: nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
   resources:
     requests:
