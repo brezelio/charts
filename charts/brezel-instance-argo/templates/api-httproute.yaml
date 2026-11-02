@@ -1,4 +1,7 @@
 {{- if .Values.gateway.api.enabled }}
+{{- if eq .Values.rollouts.api.type "canary" }}
+{{- fail "gateway.api canary routing is not enabled until Gateway plugin permissions and Argo weight ownership are configured" }}
+{{- end }}
 {{- if and (eq .Values.api_runtime "fpm") (not .Values.fpm_http.enabled) }}
 {{- fail "gateway.api requires fpm_http.enabled for FPM backends" }}
 {{- end }}
