@@ -20,6 +20,12 @@ fpm_http:
       memory: 128Mi
 # Laravel TRUSTED_PROXIES. Empty = "*" for api_runtime "http" (behind the ingress), unset for "fpm".
 trusted_proxies: ""
+gateway:
+  api:
+    enabled: false
+    name: ""
+    namespace: ""
+    section_name: https
 with_database_pod: true
 db_host: ""
 db_port: 3306

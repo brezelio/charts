@@ -1,0 +1,42 @@
+{{- if .Values.gateway.api.enabled }}
+{{- if and (eq .Values.api_runtime "fpm") (not .Values.fpm_http.enabled) }}
+{{- fail "gateway.api requires fpm_http.enabled for FPM backends" }}
+{{- end }}
+{{- if ne .Values.gateway.api.section_name "https" }}
+{{- fail "gateway.api currently requires an HTTPS listener; HTTP origin trust must be configured separately" }}
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: brezel-api
+  namespace: {{ .Values.namespace }}
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ required "gateway.api.name is required" .Values.gateway.api.name | quote }}
+      namespace: {{ default .Values.namespace .Values.gateway.api.namespace | quote }}
+      sectionName: {{ .Values.gateway.api.section_name }}
+  hostnames: {{ toJson .Values.api_hostnames }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            remove: [Forwarded, X-Forwarded-Host, X-Forwarded-Port, X-Forwarded-Prefix]
+            set:
+              - name: X-Forwarded-Proto
+                value: https
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: brezel
+          port: {{ if eq .Values.api_runtime "fpm" }}8080{{ else }}80{{ end }}
+          weight: 1
+      timeouts:
+        request: 1800s
+        backendRequest: 1800s
+{{- end }}
