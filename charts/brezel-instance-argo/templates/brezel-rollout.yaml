@@ -146,8 +146,15 @@ spec:
       stableService: brezel
       canaryService: brezel-canary
       trafficRouting:
+        {{- if and .Values.gateway.api.enabled .Values.gateway.api.canary }}
+        plugins:
+          argoproj-labs/gatewayAPI:
+            httpRoute: brezel-api
+            namespace: {{ .Values.namespace }}
+        {{- else }}
         nginx:
           stableIngress: brezel-api
+        {{- end }}
       steps:
       - setWeight: 20
       - pause:

@@ -23,6 +23,7 @@ trusted_proxies: ""
 gateway:
   api:
     enabled: false
+    canary: false
     name: ""
     namespace: ""
     section_name: https

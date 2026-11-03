@@ -1,6 +1,12 @@
 {{- if .Values.gateway.api.enabled }}
-{{- if eq .Values.rollouts.api.type "canary" }}
-{{- fail "gateway.api canary routing is not enabled until Gateway plugin permissions and Argo weight ownership are configured" }}
+{{- if and (eq .Values.rollouts.api.type "canary") (not .Values.gateway.api.canary) }}
+{{- fail "gateway.api canary requires explicit gateway.api.canary=true after plugin RBAC and Argo weight ownership are configured" }}
+{{- end }}
+{{- if and .Values.gateway.api.canary .Values.ingresses.api.enabled }}
+{{- fail "Gateway canary requires ingresses.api.enabled=false to avoid leaving public nginx weights unmanaged" }}
+{{- end }}
+{{- if and .Values.gateway.api.canary (ne .Values.rollouts.api.type "canary") }}
+{{- fail "gateway.api.canary requires rollouts.api.type=canary" }}
 {{- end }}
 {{- if and (eq .Values.api_runtime "fpm") (not .Values.fpm_http.enabled) }}
 {{- fail "gateway.api requires fpm_http.enabled for FPM backends" }}
@@ -40,7 +46,14 @@ spec:
           kind: Service
           name: brezel
           port: {{ if eq .Values.api_runtime "fpm" }}8080{{ else }}80{{ end }}
-          weight: 1
+          weight: {{ if .Values.gateway.api.canary }}100{{ else }}1{{ end }}
+        {{- if .Values.gateway.api.canary }}
+        - group: ""
+          kind: Service
+          name: brezel-canary
+          port: {{ if eq .Values.api_runtime "fpm" }}8080{{ else }}80{{ end }}
+          weight: 0
+        {{- end }}
       timeouts:
         request: 1800s
         backendRequest: 1800s
