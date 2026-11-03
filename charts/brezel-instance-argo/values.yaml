@@ -24,6 +24,8 @@ gateway:
   api:
     enabled: false
     canary: false
+    # Temporary migration: Rollouts updates nginx and Gateway weights together.
+    canary_parallel_nginx: false
     name: ""
     namespace: ""
     section_name: https
