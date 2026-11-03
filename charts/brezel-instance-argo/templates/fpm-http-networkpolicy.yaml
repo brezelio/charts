@@ -1,0 +1,28 @@
+{{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled .Values.fpm_http.trusted_gateway_cidrs .Values.gateway.api.listener_set.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: brezel-http-shared-gateway
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector:
+    matchLabels: {app: brezel}
+  policyTypes: [Ingress]
+  ingress:
+    # Preserve reachability of existing ports; restrict only the new HTTP adapter.
+    - ports:
+        - {protocol: TCP, port: 1, endPort: 8079}
+        - {protocol: TCP, port: 8081, endPort: 65535}
+        - {protocol: UDP, port: 1, endPort: 65535}
+        - {protocol: SCTP, port: 1, endPort: 65535}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.gateway.api.listener_set.gateway_namespace | quote }}
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: envoy
+              gateway.envoyproxy.io/owning-gateway-name: {{ .Values.gateway.api.listener_set.gateway_name | quote }}
+              gateway.envoyproxy.io/owning-gateway-namespace: {{ .Values.gateway.api.listener_set.gateway_namespace | quote }}
+      ports: [{protocol: TCP, port: 8080}]
+{{- end }}
