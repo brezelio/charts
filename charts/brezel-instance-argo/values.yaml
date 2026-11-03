@@ -26,6 +26,10 @@ gateway:
     name: ""
     namespace: ""
     section_name: https
+    listener_set:
+      enabled: false
+      gateway_name: ""
+      gateway_namespace: default
 with_database_pod: true
 db_host: ""
 db_port: 3306

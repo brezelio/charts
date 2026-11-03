@@ -16,10 +16,12 @@ metadata:
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io
-      kind: Gateway
+      kind: {{ if .Values.gateway.api.listener_set.enabled }}ListenerSet{{ else }}Gateway{{ end }}
       name: {{ required "gateway.api.name is required" .Values.gateway.api.name | quote }}
       namespace: {{ default .Values.namespace .Values.gateway.api.namespace | quote }}
+      {{- if not .Values.gateway.api.listener_set.enabled }}
       sectionName: {{ .Values.gateway.api.section_name }}
+      {{- end }}
   hostnames: {{ toJson .Values.api_hostnames }}
   rules:
     - matches:

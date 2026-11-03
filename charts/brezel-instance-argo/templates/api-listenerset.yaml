@@ -1,0 +1,27 @@
+{{- if and .Values.gateway.api.enabled .Values.gateway.api.listener_set.enabled }}
+{{- if not .Values.secure }}
+{{- fail "gateway.api.listener_set requires secure=true and an existing brezel-tls Secret" }}
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: {{ required "gateway.api.name is required" .Values.gateway.api.name | quote }}
+  namespace: {{ .Values.namespace }}
+spec:
+  parentRef:
+    name: {{ required "gateway.api.listener_set.gateway_name is required" .Values.gateway.api.listener_set.gateway_name | quote }}
+    namespace: {{ .Values.gateway.api.listener_set.gateway_namespace | quote }}
+  listeners:
+    {{- range $index, $hostname := .Values.api_hostnames }}
+    - name: {{ if eq $index 0 }}https{{ else }}https-{{ $index }}{{ end }}
+      hostname: {{ $hostname | quote }}
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: brezel-tls
+      allowedRoutes:
+        namespaces: {from: Same}
+    {{- end }}
+{{- end }}
