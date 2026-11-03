@@ -27,6 +27,8 @@ gateway:
     name: ""
     namespace: ""
     section_name: https
+    http:
+      enabled: false
     listener_set:
       enabled: false
       gateway_name: ""

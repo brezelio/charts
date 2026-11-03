@@ -1,0 +1,32 @@
+{{- if and .Values.gateway.api.enabled .Values.gateway.api.http.enabled }}
+{{- if not .Values.gateway.api.listener_set.enabled }}
+{{- fail "gateway.api.http requires the shared-fleet ListenerSet configuration" }}
+{{- end }}
+{{- if eq .Values.rollouts.api.type "canary" }}
+{{- fail "Gateway HTTP origin canary requires separate weight ownership integration" }}
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: brezel-api-http
+  namespace: {{ .Values.namespace }}
+spec:
+  parentRefs:
+    - name: {{ .Values.gateway.api.listener_set.gateway_name | quote }}
+      namespace: {{ .Values.gateway.api.listener_set.gateway_namespace | quote }}
+      sectionName: http
+  hostnames: {{ toJson .Values.api_hostnames }}
+  rules:
+    - filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            remove: [Forwarded, X-Forwarded-Host, X-Forwarded-Port, X-Forwarded-Prefix]
+            set: [{name: X-Forwarded-Proto, value: http}]
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: brezel
+          port: {{ if eq .Values.api_runtime "fpm" }}8080{{ else }}80{{ end }}
+          weight: 1
+      timeouts: {request: 1800s, backendRequest: 1800s}
+{{- end }}
