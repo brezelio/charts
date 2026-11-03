@@ -13,6 +13,11 @@ spec:
   hostnames: {{ toJson .Values.hostnames }}
   rules:
     - backendRefs: [{group: "", kind: Service, name: brezel-spa, port: 80, weight: 1}]
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            set:
+              - {name: Strict-Transport-Security, value: "max-age=15724800; includeSubDomains"}
       timeouts: {request: 0s, backendRequest: 0s}
 ---
 {{- end }}
@@ -32,6 +37,11 @@ spec:
   rules:
     - backendRefs:
         - {group: "", kind: Service, name: brotcast, port: {{ .Values.brotcast_server_port }}, weight: 1}
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            set:
+              - {name: Strict-Transport-Security, value: "max-age=15724800; includeSubDomains"}
       timeouts: {request: 0s, backendRequest: 0s}
 {{- end }}
 {{- end }}
