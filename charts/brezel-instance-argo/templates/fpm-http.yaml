@@ -30,7 +30,7 @@ data:
       }
       server {
         listen 8080;
-        client_max_body_size 4096m;
+        client_max_body_size {{ .Values.fpm_http.max_body_size }};
         client_body_timeout 1800s;
         # Preserve the existing cluster-edge PHP mitigation until separately retired.
         if ($http_content_type ~* "multipart/form-data") { return 403; }
