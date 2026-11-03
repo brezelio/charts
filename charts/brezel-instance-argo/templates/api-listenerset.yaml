@@ -1,4 +1,7 @@
 {{- if and .Values.gateway.api.enabled .Values.gateway.api.listener_set.enabled }}
+{{- if and .Values.gateway.api.namespace (ne .Values.gateway.api.namespace .Values.namespace) }}
+{{- fail "gateway.api.namespace must match namespace when the chart owns its ListenerSet" }}
+{{- end }}
 {{- if not .Values.secure }}
 {{- fail "gateway.api.listener_set requires secure=true and an existing brezel-tls Secret" }}
 {{- end }}
