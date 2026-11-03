@@ -31,6 +31,8 @@ gateway:
       enabled: false
       gateway_name: ""
       gateway_namespace: default
+      spa: false
+      brotcast: false
 with_database_pod: true
 db_host: ""
 db_port: 3306

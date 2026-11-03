@@ -27,4 +27,28 @@ spec:
       allowedRoutes:
         namespaces: {from: Same}
     {{- end }}
+    {{- if .Values.gateway.api.listener_set.spa }}
+    {{- range $index, $hostname := .Values.hostnames }}
+    - name: spa-{{ $index }}
+      hostname: {{ $hostname | quote }}
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs: [{name: brezel-spa-tls}]
+      allowedRoutes:
+        namespaces: {from: Same}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.gateway.api.listener_set.brotcast }}
+    - name: brotcast
+      hostname: {{ .Values.brotcast_hostname | quote }}
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs: [{name: brotcast-tls}]
+      allowedRoutes:
+        namespaces: {from: Same}
+    {{- end }}
 {{- end }}
