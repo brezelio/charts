@@ -63,6 +63,6 @@ spec:
           weight: 0
         {{- end }}
       timeouts:
-        request: 1800s
-        backendRequest: 1800s
+        request: 0s
+        backendRequest: 0s
 {{- end }}

@@ -32,5 +32,5 @@ spec:
           port: {{ if eq .Values.api_runtime "fpm" }}8080{{ else }}80{{ end }}
           weight: 0
         {{- end }}
-      timeouts: {request: 1800s, backendRequest: 1800s}
+      timeouts: {request: 0s, backendRequest: 0s}
 {{- end }}

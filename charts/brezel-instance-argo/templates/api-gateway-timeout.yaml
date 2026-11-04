@@ -1,0 +1,16 @@
+{{- if .Values.gateway.api.enabled }}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: brezel-api-timeout
+  namespace: {{ .Values.namespace }}
+spec:
+  targetRefs:
+    - {group: gateway.networking.k8s.io, kind: HTTPRoute, name: brezel-api}
+    {{- if .Values.gateway.api.http.enabled }}
+    - {group: gateway.networking.k8s.io, kind: HTTPRoute, name: brezel-api-http}
+    {{- end }}
+  timeout:
+    http:
+      streamIdleTimeout: 1800s
+{{- end }}
