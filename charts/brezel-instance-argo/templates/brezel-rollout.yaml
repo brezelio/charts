@@ -149,7 +149,13 @@ spec:
         {{- if and .Values.gateway.api.enabled .Values.gateway.api.canary }}
         plugins:
           argoproj-labs/gatewayAPI:
+            {{- if .Values.gateway.api.http.enabled }}
+            httpRoutes:
+              - name: brezel-api
+              - name: brezel-api-http
+            {{- else }}
             httpRoute: brezel-api
+            {{- end }}
             namespace: {{ .Values.namespace }}
         {{- if .Values.gateway.api.canary_parallel_nginx }}
         nginx:
