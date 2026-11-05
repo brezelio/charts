@@ -1,4 +1,4 @@
-{{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
+{{- if eq .Values.api_runtime "fpm" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

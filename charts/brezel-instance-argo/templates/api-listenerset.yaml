@@ -1,4 +1,3 @@
-{{- if and .Values.gateway.api.enabled .Values.gateway.api.listener_set.enabled }}
 {{- if and .Values.gateway.api.namespace (ne .Values.gateway.api.namespace .Values.namespace) }}
 {{- fail "gateway.api.namespace must match namespace when the chart owns its ListenerSet" }}
 {{- end }}
@@ -51,4 +50,3 @@ spec:
       allowedRoutes:
         namespaces: {from: Same}
     {{- end }}
-{{- end }}

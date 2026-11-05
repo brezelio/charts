@@ -15,7 +15,7 @@ spec:
       app: brezel
   template:
     metadata:
-      {{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
+      {{- if eq .Values.api_runtime "fpm" }}
       annotations:
         checksum/fpm-http: {{ include (print $.Template.BasePath "/fpm-http.yaml") . | sha256sum }}
       {{- end }}
@@ -81,7 +81,7 @@ spec:
             cpu: {{ .Values.brezel_init_container_resources.requests.cpu }}
             memory: {{ .Values.brezel_init_container_resources.requests.memory }}
       containers:
-      {{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
+      {{- if eq .Values.api_runtime "fpm" }}
       - name: fpm-http
         image: {{ .Values.fpm_http.image | quote }}
         ports:
@@ -133,7 +133,7 @@ spec:
       imagePullSecrets:
       - name: {{ include "brezel.imagePullSecretName" . }}
       volumes:
-      {{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
+      {{- if eq .Values.api_runtime "fpm" }}
       - name: fpm-http-config
         configMap:
           name: brezel-fpm-http
@@ -146,20 +146,12 @@ spec:
       stableService: brezel
       canaryService: brezel-canary
       trafficRouting:
-        {{- if and .Values.gateway.api.enabled .Values.gateway.api.canary }}
         plugins:
           argoproj-labs/gatewayAPI:
-            {{- if .Values.gateway.api.http.enabled }}
             httpRoutes:
               - name: brezel-api
               - name: brezel-api-http
-            {{- else }}
-            httpRoute: brezel-api
-            {{- end }}
             namespace: {{ .Values.namespace }}
-        {{- else }}
-        {{- fail "Canary requires Gateway API routing" }}
-        {{- end }}
       steps:
       - setWeight: 20
       - pause:

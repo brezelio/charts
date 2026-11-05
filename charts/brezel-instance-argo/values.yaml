@@ -8,7 +8,6 @@ api_replicas: 1
 api_runtime: "http"
 # HTTP-to-FastCGI adapter for FPM-only images; FPM is not exposed by a Service.
 fpm_http:
-  enabled: false
   max_body_size: 2048m
   # Only enable with a NetworkPolicy restricting HTTP to the trusted gateway.
   trusted_gateway_cidrs: []
@@ -24,16 +23,10 @@ fpm_http:
 trusted_proxies: ""
 gateway:
   api:
-    enabled: false
-    canary: false
-    name: ""
+    name: brezel-api
     namespace: ""
-    section_name: https
-    http:
-      enabled: false
     listener_set:
-      enabled: false
-      gateway_name: ""
+      gateway_name: shared-edge
       gateway_namespace: default
       spa: false
       brotcast: false
