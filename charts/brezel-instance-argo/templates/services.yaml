@@ -7,14 +7,15 @@ spec:
   selector:
     app: brezel
   ports:
-  - port: 80
-    targetPort: {{ if eq .Values.api_runtime "fpm" }}9000{{ else }}80{{ end }}
-    {{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
-    name: fastcgi
+    {{- if eq .Values.api_runtime "fpm" }}
   - name: http
     port: 8080
     targetPort: fpm-http
     appProtocol: http
+    {{- else }}
+  - name: http
+    port: 80
+    targetPort: 80
     {{- end }}
 ---
 apiVersion: v1
@@ -26,14 +27,15 @@ spec:
   selector:
     app: brezel
   ports:
-  - port: 80
-    targetPort: {{ if eq .Values.api_runtime "fpm" }}9000{{ else }}80{{ end }}
-    {{- if and (eq .Values.api_runtime "fpm") .Values.fpm_http.enabled }}
-    name: fastcgi
+    {{- if eq .Values.api_runtime "fpm" }}
   - name: http
     port: 8080
     targetPort: fpm-http
     appProtocol: http
+    {{- else }}
+  - name: http
+    port: 80
+    targetPort: 80
     {{- end }}
 ---
 apiVersion: v1
