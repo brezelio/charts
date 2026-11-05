@@ -9,12 +9,6 @@ spec:
     matchLabels: {app: brezel}
   policyTypes: [Ingress]
   ingress:
-    # Preserve reachability of existing ports; restrict only the new HTTP adapter.
-    - ports:
-        - {protocol: TCP, port: 1, endPort: 8079}
-        - {protocol: TCP, port: 8081, endPort: 65535}
-        - {protocol: UDP, port: 1, endPort: 65535}
-        - {protocol: SCTP, port: 1, endPort: 65535}
     - from:
         - namespaceSelector:
             matchLabels:
