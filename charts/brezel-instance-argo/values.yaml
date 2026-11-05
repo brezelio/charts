@@ -149,15 +149,6 @@ rollouts:
   api:
     type: canary
     pause_duration_seconds: 60
-  spa:
-    type: deployment
-    pause_duration_seconds: 0
-  brotcast:
-    type: deployment
-    pause_duration_seconds: 0
-  phpmyadmin:
-    type: deployment
-    pause_duration_seconds: 0
 brezel_resources:
   limits:
     cpu: "2000m"
