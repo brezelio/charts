@@ -1,0 +1,28 @@
+{{- if .Values.secure }}
+{{- $certificates := list (dict "name" "brezel-tls" "hosts" .Values.api_hostnames) }}
+{{- if .Values.gateway.api.listener_set.spa }}
+{{- $certificates = append $certificates (dict "name" "brezel-spa-tls" "hosts" .Values.hostnames) }}
+{{- end }}
+{{- if .Values.gateway.api.listener_set.brotcast }}
+{{- $certificates = append $certificates (dict "name" "brotcast-tls" "hosts" (list .Values.brotcast_hostname)) }}
+{{- end }}
+{{- if .Values.components.phpmyadmin.enabled }}
+{{- $certificates = append $certificates (dict "name" "phpmyadmin-tls" "hosts" (list .Values.pma_hostname)) }}
+{{- end }}
+{{- range $certificates }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Values.namespace }}
+spec:
+  secretName: {{ .name }}
+  dnsNames: {{ toJson .hosts }}
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: {{ required "cluster_issuer is required for TLS certificates" $.Values.cluster_issuer | quote }}
+  usages: [digital signature, key encipherment]
+{{- end }}
+{{- end }}
