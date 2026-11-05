@@ -25,4 +25,9 @@ spec:
               gateway.envoyproxy.io/owning-gateway-name: {{ .Values.gateway.api.listener_set.gateway_name | quote }}
               gateway.envoyproxy.io/owning-gateway-namespace: {{ .Values.gateway.api.listener_set.gateway_namespace | quote }}
       ports: [{protocol: TCP, port: 8080}]
+    {{- with .Values.fpm_http.internal_clients }}
+    - from:
+        {{- toYaml . | nindent 8 }}
+      ports: [{protocol: TCP, port: 8080}]
+    {{- end }}
 {{- end }}
