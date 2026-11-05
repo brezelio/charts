@@ -2,12 +2,6 @@
 {{- if and (eq .Values.rollouts.api.type "canary") (not .Values.gateway.api.canary) }}
 {{- fail "gateway.api canary requires explicit gateway.api.canary=true after plugin RBAC and Argo weight ownership are configured" }}
 {{- end }}
-{{- if and .Values.gateway.api.canary .Values.ingresses.api.enabled (not .Values.gateway.api.canary_parallel_nginx) }}
-{{- fail "Gateway canary requires ingresses.api.enabled=false to avoid leaving public nginx weights unmanaged" }}
-{{- end }}
-{{- if and .Values.gateway.api.canary_parallel_nginx (or (not .Values.gateway.api.canary) (not .Values.ingresses.api.enabled)) }}
-{{- fail "canary_parallel_nginx requires Gateway canary and existing API ingress" }}
-{{- end }}
 {{- if and .Values.gateway.api.canary (ne .Values.rollouts.api.type "canary") }}
 {{- fail "gateway.api.canary requires rollouts.api.type=canary" }}
 {{- end }}

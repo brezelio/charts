@@ -157,13 +157,8 @@ spec:
             httpRoute: brezel-api
             {{- end }}
             namespace: {{ .Values.namespace }}
-        {{- if .Values.gateway.api.canary_parallel_nginx }}
-        nginx:
-          stableIngress: brezel-api
-        {{- end }}
         {{- else }}
-        nginx:
-          stableIngress: brezel-api
+        {{- fail "Canary requires Gateway API routing" }}
         {{- end }}
       steps:
       - setWeight: 20
